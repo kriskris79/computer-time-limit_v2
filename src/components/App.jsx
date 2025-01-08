@@ -1,10 +1,32 @@
 import React from 'react';
+import NotificationConfig from './NotificationConfig'; // Add the NotificationConfig component
+import '../styles/main.scss'; // Import your global styles
 
 function App() {
+    const [notifications, setNotifications] = useState([
+        { percent: 20, message: 'Take a break' },
+        { percent: 50, message: 'Halfway there!' },
+    ]);
+
+    const updateNotification = (index, updatedNotification) => {
+        const newNotifications = [...notifications];
+        newNotifications[index] = updatedNotification;
+        setNotifications(newNotifications);
+    };
+
     return (
-        <div>
-            <h1>Welcome to your Computer time limiter program</h1>
-            <p>Adjust settings and monitor usage directly from this program.</p>
+        <div className="app">
+            <h1>Computer Time Limiter</h1>
+            <h2>Set your daily time limit and notifications</h2>
+
+            {notifications.map((notification, index) => (
+                <NotificationConfig
+                    key={index}
+                    index={index}
+                    notification={notification}
+                    updateNotifications={updateNotification}
+                />
+            ))}
         </div>
     );
 }
