@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState }from 'react';
 import NotificationConfig from './NotificationConfig'; // Add the NotificationConfig component
 import '../styles/main.scss'; // Import your global styles
 
