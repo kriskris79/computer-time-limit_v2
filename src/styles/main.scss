@@ -1,0 +1,34 @@
+.app {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: #f4f4f4;
+
+  h1 {
+    color: #333;
+  }
+
+  h2 {
+    color: #666;
+  }
+}
+
+.notification-config {
+  margin-top: 20px;
+
+  label {
+    margin-right: 10px;
+  }
+
+  input {
+    padding: 5px;
+    margin: 5px;
+  }
+
+  button {
+    background-color: red;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+  }
+}
