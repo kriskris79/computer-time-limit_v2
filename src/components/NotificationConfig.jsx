@@ -1,17 +1,18 @@
 import React from 'react';
 
-function NotificationConfig({ index, notification, updateNotifications }) {
+function NotificationConfig({ index, notification, updateNotifications, removeNotification }) {
 
     if (!notification) {
         return null;
     }
 
-    const handlePercentChange = e => {
-        updateNotifications(index, { ...notification, percent: e.target.value });
+    const handlePercentChange = (e) => {
+        const newPercent = parseInt(e.target.value, 10);
+        updateNotifications({ ...notification, percent: newPercent });
     };
 
-    const handleMessageChange = e => {
-        updateNotifications(index, { ...notification, message: e.target.value });
+    const handleMessageChange = (e) => {
+        updateNotifications({ ...notification, message: e.target.value });
     };
 
     return (
@@ -23,13 +24,14 @@ function NotificationConfig({ index, notification, updateNotifications }) {
                 max="100"
                 value={notification.percent}
                 onChange={handlePercentChange}
-            />%
+            />
+            %
             <input
                 type="text"
                 value={notification.message}
                 onChange={handleMessageChange}
             />
-            <button onClick={() => updateNotifications(index, null)}>Remove</button>
+            <button onClick={() => removeNotification(index)}>Remove</button>
         </div>
     );
 }
