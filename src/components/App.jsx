@@ -3,9 +3,14 @@ import NotificationConfig from './NotificationConfig'; // Add the NotificationCo
 import '../styles/main.scss'; // Import your global styles
 
 function App() {
-    const [notifications, setNotifications] = useState([
-        { percent: 20, message: 'Take a break' },
-        { percent: 50, message: 'Halfway there!' },
+    const [dailyLimits, setDailyLimits] = useState({
+        Monday: { hours: 1, minutes: 0, notifications: [] },
+        Tuesday: { hours: 1, minutes: 0, notifications: [] },
+        Wednesday: { hours: 1, minutes: 0, notifications: [] },
+        Thursday: { hours: 1, minutes: 0, notifications: [] },
+        Friday: { hours: 1, minutes: 0, notifications: [] },
+        Saturday: { hours: 1, minutes: 0, notifications: [] },
+        Sunday: { hours: 1, minutes: 0, notifications: [] }
     ]);
 
     const updateNotification = (index, updatedNotification) => {
@@ -17,16 +22,7 @@ function App() {
     return (
         <div className="app">
             <h1>Computer Time Limiter</h1>
-            <h2>Set your daily time limit and notifications</h2>
 
-            {notifications.map((notification, index) => (
-                <NotificationConfig
-                    key={index}
-                    index={index}
-                    notification={notification}
-                    updateNotifications={updateNotification}
-                />
-            ))}
         </div>
     );
 }
