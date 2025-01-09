@@ -1,6 +1,11 @@
 import React from 'react';
 
 function NotificationConfig({ index, notification, updateNotifications }) {
+
+    if (!notification) {
+        return null;
+    }
+
     const handlePercentChange = e => {
         updateNotifications(index, { ...notification, percent: e.target.value });
     };
