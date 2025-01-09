@@ -13,10 +13,29 @@ function App() {
         Sunday: { hours: 1, minutes: 0, notifications: [] }
     ]);
 
-    const updateNotification = (index, updatedNotification) => {
-        const newNotifications = [...notifications];
+    const handleAddNotification = (day) => {
+        const updatedNotifications = [...dailyLimits[day].notifications, { percent: 0, message: '' }];
+        setDailyLimits({
+            ...dailyLimits,
+            [day]: { ...dailyLimits[day], notifications: updatedNotifications }
+        });
+    };
+
+    const updateNotification = (day, index, updatedNotification) => {
+        const newNotifications = [...dailyLimits[day].notifications];
         newNotifications[index] = updatedNotification;
-        setNotifications(newNotifications);
+        setDailyLimits({
+            ...dailyLimits,
+            [day]: { ...dailyLimits[day], notifications: newNotifications }
+        });
+    };
+
+    const removeNotification = (day, index) => {
+        const filteredNotifications = dailyLimits[day].notifications.filter((_, i) => i !== index);
+        setDailyLimits({
+            ...dailyLimits,
+            [day]: { ...dailyLimits[day], notifications: filteredNotifications }
+        });
     };
 
     return (
