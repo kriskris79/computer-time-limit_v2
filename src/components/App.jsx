@@ -41,7 +41,21 @@ function App() {
     return (
         <div className="app">
             <h1>Computer Time Limiter</h1>
-
+            {Object.keys(dailyLimits).map((day) => (
+                <div key={day}>
+                    <h2>{day}</h2>
+                    {/* Input fields for time and buttons for notifications */}
+                    {dailyLimits[day].notifications.map((notification, index) => (
+                        <NotificationConfig
+                            key={index}
+                            notification={notification}
+                            updateNotifications={(updatedNotification) =>
+                                updateNotification(day, index, updatedNotification)}
+                            removeNotification={() => removeNotification(day, index)}
+                        />
+                    ))}
+                </div>
+            ))}
         </div>
     );
 }
