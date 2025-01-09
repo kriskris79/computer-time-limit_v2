@@ -13,10 +13,10 @@ function App() {
         Sunday: {hours: 1, minutes: 0, notifications: []}
     });
 
-    // const handleTimeChange = (day, field, value) => {
-    //     const updatedDay = {...dailyLimits[day], [field]: value};
-    //     setDailyLimits({...dailyLimits, [day]: updatedDay});
-    // };
+    const handleTimeChange = (day, field, value) => {
+        const updatedDay = {...dailyLimits[day], [field]: value};
+        setDailyLimits({...dailyLimits, [day]: updatedDay});
+    };
 
     const handleAddNotification = (day) => {
         const updatedNotifications = [...dailyLimits[day].notifications, { percent: 0, message: '' }];
