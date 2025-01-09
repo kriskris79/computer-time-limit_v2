@@ -17,7 +17,7 @@ function NotificationConfig({ index, notification, updateNotifications, removeNo
 
     return (
         <div className="notification-config">
-            <label>Notification {index + 1}:</label>
+            <label>Notification {index + 1} (Remaining Time %):</label>
             <input
                 type="number"
                 min="0"
@@ -26,8 +26,10 @@ function NotificationConfig({ index, notification, updateNotifications, removeNo
                 onChange={handlePercentChange}
             />
             %
+            <span className="info-text">Time remaining as a percentage</span>
             <input
                 type="text"
+                placeholder="Custom Message (e.g., Time is almost up!)"
                 value={notification.message}
                 onChange={handleMessageChange}
             />
