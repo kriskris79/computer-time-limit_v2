@@ -25,7 +25,7 @@ function NotificationConfig({ index, notification, updateNotifications, removeNo
             <span className="info-text">Enter the minutes left when the notification should appear</span>
             <input
                 type="text"
-                placeholder="Custom Message (e.g., Time is running out!)"
+                placeholder="Custom message (e.g., Time is running out!)"
                 value={notification.message || ''}
                 onChange={handleMessageChange}
             />
