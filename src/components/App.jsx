@@ -5,13 +5,13 @@ import CustomModal from './CustomModal';
 
 function App() {
     const [dailyLimits, setDailyLimits] = useState({
-        Monday: { hours: 0, minutes: 5, notifications: [] },
-        Tuesday: { hours: 0, minutes: 5, notifications: [] },
-        Wednesday: { hours: 0, minutes: 5, notifications: [] },
-        Thursday: { hours: 0, minutes: 5, notifications: [] },
-        Friday: { hours: 0, minutes: 5, notifications: [] },
-        Saturday: { hours: 0, minutes: 5, notifications: [] },
-        Sunday: { hours: 0, minutes: 5, notifications: [] }
+        Monday: { hours: 1, minutes: 0, notifications: [] },
+        Tuesday: { hours: 1, minutes: 0, notifications: [] },
+        Wednesday: { hours: 1, minutes: 0, notifications: [] },
+        Thursday: { hours: 1, minutes: 0, notifications: [] },
+        Friday: { hours: 1, minutes: 0, notifications: [] },
+        Saturday: { hours: 1, minutes: 0, notifications: [] },
+        Sunday: { hours: 1, minutes: 0, notifications: [] }
     });
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -103,15 +103,20 @@ function App() {
                 <div key={day}>
                     <h2>{day}</h2>
                     <div className="time-inputs">
-                        <label>Hours:</label>
+                        <label htmlFor={`${day}-hours`}>Hours:</label>
                         <input
                             type="number"
+                            id={`${day}-hours`}  // unique id
+                            name={`${day}-hours`} // unique name
                             value={dailyLimits[day].hours}
                             onChange={(e) => handleTimeChange(day, 'hours', parseInt(e.target.value, 10) || 0)}
                         />
-                        <label>Minutes:</label>
+
+                        <label htmlFor={`${day}-minutes`}>Minutes:</label>
                         <input
                             type="number"
+                            id={`${day}-minutes`}  // unique id
+                            name={`${day}-minutes`} // unique name
                             value={dailyLimits[day].minutes}
                             onChange={(e) => handleTimeChange(day, 'minutes', parseInt(e.target.value, 10) || 0)}
                         />
