@@ -18,6 +18,8 @@ function App() {
     const [modalContent, setModalContent] = useState({ title: '', message: '' });
     const startTimeRef = useRef(new Date());
     const triggeredNotificationsRef = useRef({});
+    const preNotificationShownRef = useRef(false);
+    const sessionEndedRef = useRef(false);
 
     const handleTimeChange = (day, field, value) => {
         const updatedDay = { ...dailyLimits[day], [field]: value || 0 };
@@ -61,6 +63,33 @@ function App() {
             triggeredNotificationsRef.current[today] = new Set();
         }
 
+        // **Session End Notification (only show once)**
+        if (remainingMinutes <= 0 && !sessionEndedRef.current) {
+            sessionEndedRef.current = true;
+            setModalContent({
+                title: `Session Ended for ${today}`,
+                message: `Time is up! Please save your work.`,
+            });
+            setIsModalOpen(true);
+            return;
+        }
+
+        if (remainingMinutes > 0) {
+            sessionEndedRef.current = false; // Reset if there's still time left for the day
+        }
+
+        // **Pre-notification (1 minute before end)**
+        if (remainingMinutes <= 1 && remainingMinutes > 0 && !preNotificationShownRef.current) {
+            setModalContent({
+                title: `Final Warning for ${today}`,
+                message: `The system will shut down in 1 minute. Get ready!`,
+            });
+            setIsModalOpen(true);
+            preNotificationShownRef.current = true; // Ensure this only triggers once
+            return;
+        }
+
+        // **Custom Main Notifications (show only once)**
         dailyLimits[today].notifications.forEach((notification, index) => {
             if (remainingMinutes <= notification.minutesLeft && !triggeredNotificationsRef.current[today].has(index)) {
                 setModalContent({
@@ -68,13 +97,19 @@ function App() {
                     message: `${notification.message || 'Your time is almost up!'}. You have ${Math.max(0, Math.round(remainingMinutes))} minutes left.`,
                 });
                 setIsModalOpen(true);
-                triggeredNotificationsRef.current[today].add(index);
+                triggeredNotificationsRef.current[today].add(index); // Mark this notification as shown
             }
         });
     };
 
     const resetNotificationsForNewDay = () => {
         triggeredNotificationsRef.current = {}; // Clear all notifications at midnight
+        preNotificationShownRef.current = false; // Reset the pre-notification for the new day
+        sessionEndedRef.current = false; // Reset the session-ended notification for the new day
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
     };
 
     useEffect(() => {
@@ -95,7 +130,7 @@ function App() {
                 isOpen={isModalOpen}
                 title={modalContent.title}
                 message={modalContent.message}
-                onClose={() => setIsModalOpen(false)}
+                onClose={handleCloseModal}
             />
 
             {Object.keys(dailyLimits).map(day => (
@@ -105,8 +140,8 @@ function App() {
                         <label htmlFor={`${day}-hours`}>Hours:</label>
                         <input
                             type="number"
-                            id={`${day}-hours`}  // unique id
-                            name={`${day}-hours`} // unique name
+                            id={`${day}-hours`}
+                            name={`${day}-hours`}
                             value={dailyLimits[day].hours}
                             onChange={(e) => handleTimeChange(day, 'hours', parseInt(e.target.value, 10) || 0)}
                         />
@@ -114,8 +149,8 @@ function App() {
                         <label htmlFor={`${day}-minutes`}>Minutes:</label>
                         <input
                             type="number"
-                            id={`${day}-minutes`}  // unique id
-                            name={`${day}-minutes`} // unique name
+                            id={`${day}-minutes`}
+                            name={`${day}-minutes`}
                             value={dailyLimits[day].minutes}
                             onChange={(e) => handleTimeChange(day, 'minutes', parseInt(e.target.value, 10) || 0)}
                         />
