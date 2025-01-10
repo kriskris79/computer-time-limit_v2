@@ -1,36 +1,32 @@
 import React from 'react';
 
 function NotificationConfig({ index, notification, updateNotifications, removeNotification }) {
+    if (!notification) return null;
 
-    if (!notification) {
-        return null;
-    }
-
-    const handlePercentChange = (e) => {
-        const newPercent = parseInt(e.target.value, 10);
-        updateNotifications({ ...notification, percent: newPercent });
+    const handleMinutesChange = (e) => {
+        const newMinutes = parseInt(e.target.value, 10) || 0;
+        updateNotifications({ ...notification, minutesLeft: newMinutes });
     };
 
     const handleMessageChange = (e) => {
-        updateNotifications({ ...notification, message: e.target.value });
+        updateNotifications({ ...notification, message: e.target.value || '' });
     };
 
     return (
         <div className="notification-config">
-            <label>Notification {index + 1} (Remaining Time %):</label>
+            <label>Notification {index + 1} (Minutes Remaining):</label>
             <input
                 type="number"
-                min="0"
-                max="100"
-                value={notification.percent}
-                onChange={handlePercentChange}
+                min="1"
+                max="1440"
+                value={notification.minutesLeft || 0}
+                onChange={handleMinutesChange}
             />
-            %
-            <span className="info-text">Time remaining as a percentage</span>
+            <span className="info-text">Enter the minutes left when the notification should appear</span>
             <input
                 type="text"
-                placeholder="Custom Message (e.g., Time is almost up!)"
-                value={notification.message}
+                placeholder="Custom Message (e.g., Time is running out!)"
+                value={notification.message || ''}
                 onChange={handleMessageChange}
             />
             <button onClick={() => removeNotification(index)}>Remove</button>
