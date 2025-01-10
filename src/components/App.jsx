@@ -64,7 +64,7 @@ function App() {
         dailyLimits[today].notifications.forEach((notification, index) => {
             if (remainingMinutes <= notification.minutesLeft && !triggeredNotificationsRef.current[today].has(index)) {
                 setModalContent({
-                    title: `Time limit reached for ${today}`,
+                    title: `Notification for ${today}`,
                     message: `${notification.message || 'Your time is almost up!'}. You have ${Math.max(0, Math.round(remainingMinutes))} minutes left.`,
                 });
                 setIsModalOpen(true);
@@ -74,8 +74,7 @@ function App() {
     };
 
     const resetNotificationsForNewDay = () => {
-        const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-        triggeredNotificationsRef.current[today] = new Set();
+        triggeredNotificationsRef.current = {}; // Clear all notifications at midnight
     };
 
     useEffect(() => {
@@ -84,7 +83,7 @@ function App() {
     }, [dailyLimits]);
 
     useEffect(() => {
-        const resetInterval = setInterval(resetNotificationsForNewDay, 60000); // Check daily reset
+        const resetInterval = setInterval(resetNotificationsForNewDay, 86400000); // Reset once per day
         return () => clearInterval(resetInterval);
     }, []);
 
