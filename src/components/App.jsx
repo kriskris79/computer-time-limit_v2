@@ -1,29 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import NotificationConfig from './NotificationConfig';
 import '../styles/main.scss';
 import CustomModal from './CustomModal';
 
 function App() {
     const [dailyLimits, setDailyLimits] = useState({
-        Monday: { hours: 1, minutes: 0, notifications: [] },
-        Tuesday: { hours: 1, minutes: 0, notifications: [] },
-        Wednesday: { hours: 1, minutes: 0, notifications: [] },
-        Thursday: { hours: 1, minutes: 0, notifications: [] },
-        Friday: { hours: 1, minutes: 0, notifications: [] },
-        Saturday: { hours: 1, minutes: 0, notifications: [] },
-        Sunday: { hours: 1, minutes: 0, notifications: [] }
+        Monday: { hours: 0, minutes: 5, notifications: [] },
+        Tuesday: { hours: 0, minutes: 5, notifications: [] },
+        Wednesday: { hours: 0, minutes: 5, notifications: [] },
+        Thursday: { hours: 0, minutes: 5, notifications: [] },
+        Friday: { hours: 0, minutes: 5, notifications: [] },
+        Saturday: { hours: 0, minutes: 5, notifications: [] },
+        Sunday: { hours: 0, minutes: 5, notifications: [] }
     });
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalContent, setModalContent] = useState({ title: '', message: '' });
+    const startTimeRef = useRef(new Date());
+    const triggeredNotificationsRef = useRef({});
 
     const handleTimeChange = (day, field, value) => {
-        const updatedDay = { ...dailyLimits[day], [field]: value };
+        const updatedDay = { ...dailyLimits[day], [field]: value || 0 };
         setDailyLimits({ ...dailyLimits, [day]: updatedDay });
     };
 
     const handleAddNotification = (day) => {
-        const updatedNotifications = [...dailyLimits[day].notifications, { percent: 10, message: 'Time is running out!' }];
+        const updatedNotifications = [...dailyLimits[day].notifications, { minutesLeft: 1, message: '' }];
         setDailyLimits({ ...dailyLimits, [day]: { ...dailyLimits[day], notifications: updatedNotifications } });
     };
 
@@ -44,36 +46,52 @@ function App() {
         });
     };
 
-    // Function to handle time limit checks
     const handleTimeLimitCheck = () => {
-        Object.keys(dailyLimits).forEach((day) => {
-            const totalMinutes = dailyLimits[day].hours * 60 + dailyLimits[day].minutes;
-            const usedMinutes = Math.floor(Math.random() * totalMinutes); // Simulating time usage for testing
-            const remainingTimePercent = ((totalMinutes - usedMinutes) / totalMinutes) * 100;
+        const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const today = daysOfWeek[new Date().getDay()];
 
-            dailyLimits[day].notifications.forEach((notification) => {
-                if (remainingTimePercent <= notification.percent) {
-                    setModalContent({
-                        title: `Alert for ${day}`,
-                        message: `${notification.message}. You have ${remainingTimePercent.toFixed(1)}% of your time left.`,
-                    });
-                    setIsModalOpen(true);
-                }
-            });
+        if (!dailyLimits[today]) return;
+
+        const totalMinutes = dailyLimits[today].hours * 60 + dailyLimits[today].minutes;
+        const now = new Date();
+        const elapsedMinutes = (now - startTimeRef.current) / (1000 * 60);
+        const remainingMinutes = totalMinutes - elapsedMinutes;
+
+        if (!triggeredNotificationsRef.current[today]) {
+            triggeredNotificationsRef.current[today] = new Set();
+        }
+
+        dailyLimits[today].notifications.forEach((notification, index) => {
+            if (remainingMinutes <= notification.minutesLeft && !triggeredNotificationsRef.current[today].has(index)) {
+                setModalContent({
+                    title: `Time limit reached for ${today}`,
+                    message: `${notification.message || 'Your time is almost up!'}. You have ${Math.max(0, Math.round(remainingMinutes))} minutes left.`,
+                });
+                setIsModalOpen(true);
+                triggeredNotificationsRef.current[today].add(index);
+            }
         });
     };
 
-    // Call time limit check every minute
+    const resetNotificationsForNewDay = () => {
+        const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+        triggeredNotificationsRef.current[today] = new Set();
+    };
+
     useEffect(() => {
-        const interval = setInterval(handleTimeLimitCheck, 60000); // Check every 60 seconds
-        return () => clearInterval(interval); // Cleanup on unmount
+        const interval = setInterval(handleTimeLimitCheck, 5000); // Check every 5 seconds
+        return () => clearInterval(interval);
     }, [dailyLimits]);
+
+    useEffect(() => {
+        const resetInterval = setInterval(resetNotificationsForNewDay, 60000); // Check daily reset
+        return () => clearInterval(resetInterval);
+    }, []);
 
     return (
         <div className="app">
             <h1>Computer Time Limiter</h1>
 
-            {/* Custom Modal for Alerts */}
             <CustomModal
                 isOpen={isModalOpen}
                 title={modalContent.title}
@@ -89,13 +107,13 @@ function App() {
                         <input
                             type="number"
                             value={dailyLimits[day].hours}
-                            onChange={(e) => handleTimeChange(day, 'hours', parseInt(e.target.value, 10))}
+                            onChange={(e) => handleTimeChange(day, 'hours', parseInt(e.target.value, 10) || 0)}
                         />
                         <label>Minutes:</label>
                         <input
                             type="number"
                             value={dailyLimits[day].minutes}
-                            onChange={(e) => handleTimeChange(day, 'minutes', parseInt(e.target.value, 10))}
+                            onChange={(e) => handleTimeChange(day, 'minutes', parseInt(e.target.value, 10) || 0)}
                         />
                     </div>
                     <button onClick={() => handleAddNotification(day)}>Add Notification</button>
