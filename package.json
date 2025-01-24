@@ -10,7 +10,7 @@
     "electron-dev": "npm run dev & electron .",
     "electron-pack": "cross-env NODE_ENV=production electron-builder"
   },
-  "homepage": ".",
+  "homepage": "./",
   "build": {
     "appId": "com.yourapp.id",
     "files": [
